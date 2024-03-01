@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/login.css">
+    <title>WaterMapVerify</title>
+</head>
+<body>
+    <form action="login" method="post">
+        {% csrf_token %}
+        <h1>Login</h1>
+        <div>
+            <label for="email">Email address</label>
+            <br>
+            <input type="email" name="email">
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <br>
+            <input type="password" name="password">
+        </div>
+        <a href="register" style="font-size: 20px; padding-left: 58%;">Don't have an account?</a>
+        <br>
+        <button>Login</button>
+    </form>
+</body>
+</html>
