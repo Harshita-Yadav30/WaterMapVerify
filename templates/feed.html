@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/feed.css">
+    <title>WaterMapVerify</title>
+
+    <style>
+        #search-button:hover{
+            background-color: black;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="../static/logo.jpg" alt="Logo" id="logo"/>
+        <div class="navbar">
+            <ul class="nav-options">
+                <a href="home">Home</a>
+                <a href="map">Map</a>
+                <a href="feed" style="color: black;">Feed</a>
+                <a href="contact">Contact Us</a>
+            </ul>
+
+            {% if user == '' %}
+                <div class="buttons">
+                    <button id="register" onclick="window.location.href='register'">Register</button>
+                    <button onclick="window.location.href='login'">Log In</button>
+                </div>
+            {% else %}
+                <p>Logged in as {{user}}</p>
+                <button onclick="window.location.href='logout'">Logout</button>
+            {% endif %}
+        </div>
+    </header>
+
+    <form class="location" method="post" action="feed" style="display: flex; justify-content: space-around; align-items: center; padding: 2% 19%;">
+        {% csrf_token %}
+        <div>
+            <label for="long" style="font-size: 20px;">Longitude</label>
+            <input type="text" name="long" id="long" style="width: 200px; height: 35px; padding-left: 1%; font-size: 18px;" required></input>
+        </div>
+        <div>
+            <label for="lat" style="font-size: 20px;">Latitude</label>
+            <input type="text" name="lat" id="lat" style="width: 200px; height: 35px; padding-left: 1%; font-size: 18px;" required></input>
+        </div>
+        <button type="button" onclick="getLocation()" id="loc-button" style="background-color: rgb(33, 62, 248);">Get My Geolocation</button>
+        <button type="submit" id="search-button" style="width: 150px; height: 50px; font-size: 22px; cursor: pointer; border-color: black; border-radius: 0;">Search</button>
+    </form>
+
+    {% if post %}
+    {% load static %}
+    {% for group in data %}
+    <div class="feeds">
+        {% for item in group %}
+        {% if item %}
+            {% if item.image != '0' %}
+            <div class="col">
+                <img src="{% static '/' %}{{ item.image }}" alt="Dirty-Water-Image" class="feed-img" width="450px" height="300px">
+                <h1>{{ item.place }}</h1>
+                <big>{{ item.description }}</big>
+                {% load humanize %}
+                {% with current_date=date.today %}
+                    {% with target_date=item.date %}
+                        <p>Uploaded {{ target_date|timesince:current_date }} ago</p>
+                    {% endwith %}
+                {% endwith %}
+            </div>
+            {% else %}
+            <div class="col">
+                <video class="feed-img" width="450px" height="300px" controls>
+                    <source src="{% static '/' %}{{ item.video }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <h1>{{ item.place }}</h1>
+                <big>{{ item.description }}</big>
+                <p>Uploaded {{ item.date_diff }} days ago</p>
+            </div>
+            {% endif %}
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <script>
+        const lon = document.getElementById("long");
+        const lat = document.getElementById("lat");
+    
+        function getLocation() {
+            try{
+                if(navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
+                    alert("Geolocation is not supported by this browser.")
+                    lon.value, lat.value = -1, -1;
+                }
+            }
+            catch(e){
+                showError(e,lon,lat);
+            }
+        }
+    
+        function showPosition(position) {
+            lon.value = position.coords.longitude;
+            lon.placeholder = position.coords.longitude;
+            lat.value = position.coords.latitude;
+            lat.placeholder = position.coords.latitude;
+        }
+    
+        function showError(error,lon,lat) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("Geolocation is not supported by this browser.")
+                    lon.value, lat.value = -1, -1;
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Geolocation is not supported by this browser.")
+                    lon.value, lat.value = -1, -1;
+                    break;
+                case error.TIMEOUT:
+                    alert("Geolocation is not supported by this browser.")
+                    lon.value, lat.value = -1, -1;
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("Geolocation is not supported by this browser.")
+                    lon.value, lat.value = -1, -1;
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

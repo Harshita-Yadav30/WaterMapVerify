@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/home.css">
+    <title>WaterMapVerify</title>
+</head>
+<body>
+    {% if showAlert %}
+    <script>
+        function showAlert(message) {
+            alert(message);
+        }
+        showAlert("Only image and video files are acceptable.");
+    </script>
+    {% endif %}
+
+    {% if success %}
+    <script>
+        function showAlert(message) {
+            alert(message);
+        }
+        showAlert("Image saved successfully in our database!");
+    </script>
+    {% endif %}
+
+    {% if failure %}
+    <script>
+        function showAlert(message) {
+            alert(message);
+        }
+        showAlert("The uploaded image is not dirty water! Kindly upload a correct image..");
+    </script>
+    {% endif %}
+
+    <header>
+        <img src="../static/logo.jpg" alt="Logo" id="logo"/>
+        <div class="navbar">
+            <ul class="nav-options">
+                <a href="home" style="color: black;">Home</a>
+                <a href="map">Map</a>
+                <a href="feed">Feed</a>
+                <a href="contact">Contact Us</a>
+            </ul>
+
+            {% if user == '' %}
+                <div class="buttons">
+                    <button id="register" onclick="window.location.href='register'">Register</button>
+                    <button onclick="window.location.href='login'">Log In</button>
+                </div>
+            {% else %}
+                <p>Logged in as {{user}}</p>
+                <button onclick="window.location.href='logout'">Logout</button>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="imgs">
+            <img src="../static/polluted_river.jpg" alt="Dirty Water"/>
+            <img src="../static/indian_map.png" alt="Map Image"/>
+            <img src="../static/verify.jpg" alt="Verify"/>
+        </div>
+
+        <h1>WaterMapVerify</h1>
+        <big>Mapping and Verifying Water Concerns</big>
+    </div>
+
+    <div class="response-form">
+        <h2>Post an image</h2>
+        <form action="home" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="water-image">Upload image or video</label>
+            <br>
+            <input type="file" name="image" style="width: 300px; height: 30px;" required>
+            <br>
+
+            <label for="place">Name of Place</label>
+            <br>
+            <input type="text" name="place" placeholder="Enter name of location" style="width: 250px; height: 40px; padding-left: 1%;" required>
+            <br>
+
+            <label for="description">Description</label>
+            <textarea type="text" name="description" placeholder="Enter the description" rows="5" cols="50"></textarea>
+            <br>
+
+            <div class="geolocation">
+                <div class="coords">
+                    <label for="longitude">Longitude</label>
+                    <input type="text" name="longitude" id="longitude" style="width: 200px; height: 35px; padding-left: 1%;" required></input>
+                    <br>
+                    <label for="latitude" style="margin-right: 16px;">Latitude</label>
+                    <input type="text" name="latitude" id="latitude" style="width: 200px; height: 35px; padding-left: 1%;" required></input>
+                </div>
+                <button type="button" onclick="getLocation()" id="location-button">Get Geolocation</button>
+            </div>
+            
+            {% if user == '' %}
+                <button type="submit" disabled title="To upload an image, you need to login first." style="cursor:default;">Post</button>
+            {% else %}
+                <button type="submit">Post</button>
+            {% endif %}
+        </form>
+    </div>
+
+    <script>
+        const lon = document.getElementById("longitude");
+        const lat = document.getElementById("latitude");
+    
+        function getLocation() {
+            try{
+                if(navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
+                    alert("Geolocation is not supported by this browser.")
+                    lon.value, lat.value = -1, -1;
+                }
+            }
+            catch(e){
+                showError(e,lon,lat);
+            }
+        }
+    
+        function showPosition(position) {
+            lon.value = position.coords.longitude;
+            lon.placeholder = position.coords.longitude;
+            lat.value = position.coords.latitude;
+            lat.placeholder = position.coords.latitude;
+        }
+    
+        function showError(error,lon,lat) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("Geolocation is not supported by this browser.")
+                    lon.value, lat.value = -1, -1;
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Geolocation is not supported by this browser.")
+                    lon.value, lat.value = -1, -1;
+                    break;
+                case error.TIMEOUT:
+                    alert("Geolocation is not supported by this browser.")
+                    lon.value, lat.value = -1, -1;
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("Geolocation is not supported by this browser.")
+                    lon.value, lat.value = -1, -1;
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/map.css">
+    <title>WaterMapVerify</title>
+</head>
+<body>
+    <header>
+        <img src="../static/logo.jpg" alt="Logo" id="logo"/>
+        <div class="navbar">
+            <ul class="nav-options">
+                <a href="home">Home</a>
+                <a href="map" style="color: black;">Map</a>
+                <a href="feed">Feed</a>
+                <a href="contact">Contact Us</a>
+            </ul>
+
+            {% if user == '' %}
+                <div class="buttons">
+                    <button id="register" onclick="window.location.href='register'">Register</button>
+                    <button onclick="window.location.href='login'">Log In</button>
+                </div>
+            {% else %}
+                <p>Logged in as {{user}}</p>
+                <button onclick="window.location.href='logout'">Logout</button>
+            {% endif %}
+        </div>
+    </header>
+    {{plot_html | safe}}
+</body>
+</html>
